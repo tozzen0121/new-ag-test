@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
-import { initGA, pageview, event, verifyGA4Setup } from './g4-tag'
+import { pageview, event, verifyGA4Setup } from './g4-tag'
 
 // Test event function
 const testGA4Event = () => {
@@ -22,18 +22,14 @@ const testGA4Event = () => {
 function GA4ProviderContent({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
     const searchParams = useSearchParams()
-    const [isInitialized, setIsInitialized] = useState(false)
     const [isVerified, setIsVerified] = useState(false)
 
     useEffect(() => {
-        const initializeGA4 = async () => {
+        const checkGA4Setup = async () => {
             try {
-                // Initialize GA4
-                console.log('Initializing GA4...')
-                await initGA()
-                setIsInitialized(true)
-                console.log('GA4 initialized')
-
+                // Wait a bit for GA4 to be available
+                await new Promise(resolve => setTimeout(resolve, 1000))
+                
                 // Verify setup
                 const verified = await verifyGA4Setup()
                 setIsVerified(verified)
@@ -44,32 +40,28 @@ function GA4ProviderContent({ children }: { children: React.ReactNode }) {
                     testGA4Event()
                 }
             } catch (error) {
-                console.error('Failed to initialize GA4:', error)
-                setIsInitialized(false)
+                console.error('Failed to verify GA4 setup:', error)
                 setIsVerified(false)
             }
         }
 
-        initializeGA4()
+        checkGA4Setup()
     }, [])
 
     useEffect(() => {
-        // Only track page views if GA4 is initialized and verified
-        if (isInitialized && isVerified && pathname) {
+        // Track page views if GA4 is verified
+        if (isVerified && pathname) {
             const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '')
             console.log('Tracking page view:', url)
             pageview(url)
         }
-    }, [pathname, searchParams, isInitialized, isVerified])
+    }, [pathname, searchParams, isVerified])
 
     // Add debug info in development
-    // if (process.env.NODE_ENV === 'development') {
     console.log('GA4 Status:', {
-        isInitialized,
         isVerified,
-        trackingId: process.env.NEXT_PUBLIC_GA_ID
+        trackingId: process.env.NEXT_PUBLIC_GA_ID || 'G-QCELM17N8J'
     })
-    // }
 
     return <>{children}</>
 }

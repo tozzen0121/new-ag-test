@@ -12,7 +12,7 @@ declare global {
 
 export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-QCELM17N8J'
 
-// Initialize GA4
+// Initialize GA4 - now just checks if it's available
 export const initGA = (): Promise<void> => {
     return new Promise((resolve, reject) => {
         if (!GA_TRACKING_ID || typeof window === 'undefined') {
@@ -20,48 +20,24 @@ export const initGA = (): Promise<void> => {
             return
         }
 
-        // Initialize dataLayer
-        window.dataLayer = window.dataLayer || []
-
-        // Load GA4 script
-        const script = document.createElement('script')
-        script.async = true
-        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`
-        
-        script.onload = () => {
-            // Initialize gtag
-            window.gtag = function gtag(...args: unknown[]) {
-                window.dataLayer.push(args)
-            }
-
-            // Set initial timestamp
-            window.gtag('js', new Date())
-
-            // Configure GA4 with production settings
-            window.gtag('config', GA_TRACKING_ID, {
-                send_page_view: false,
-                debug_mode: true,
-                cookie_flags: 'SameSite=NoneSecure',
-                cookie_domain: 'auto',
-                cookie_expires: 28 * 24 * 60 * 60,
-            })
-
-            // Set default consent
-            window.gtag('consent', 'default', {
-                analytics_storage: 'granted',
-                ad_storage: 'granted',
-            })
-
-            console.log('GA4 initialized successfully')
+        // Check if GA4 is already loaded
+        if (typeof window.gtag === 'function') {
+            console.log('GA4 already initialized')
             resolve()
+            return
         }
 
-        script.onerror = (error) => {
-            console.error('Failed to load GA4 script:', error)
-            reject(error)
+        // Wait for GA4 to be available
+        const checkGA4 = () => {
+            if (typeof window.gtag === 'function') {
+                console.log('GA4 initialized successfully')
+                resolve()
+            } else {
+                setTimeout(checkGA4, 100)
+            }
         }
-
-        document.head.appendChild(script)
+        
+        checkGA4()
     })
 }
 
