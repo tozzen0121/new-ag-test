@@ -1,6 +1,21 @@
 import Image from "next/image";
+import { event } from './ga4/g4-tag'
 
 export default function Home() {
+  const handleTestEvent = () => {
+    console.log('Sending test GA4 event...')
+    event({
+      action: 'DashPending',
+      category: 'dashboard',
+      label: 'Test Button Click',
+      page_name: 'Home Page',
+      tab_name: 'Test Tab',
+      value: 1,
+      non_interaction: false
+    })
+    console.log('Test GA4 event sent!')
+  }
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
@@ -48,6 +63,19 @@ export default function Home() {
             Read our docs
           </a>
         </div>
+
+        {/* GA4 Test Button */}
+        <div className="mt-8">
+          <button
+            onClick={handleTestEvent}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Test GA4 Event
+          </button>
+          <p className="text-sm text-gray-600 mt-2">
+            Click this button to test Google Analytics 4 event tracking
+          </p>
+        </div>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a
@@ -78,7 +106,7 @@ export default function Home() {
             width={16}
             height={16}
           />
-          Examples- Juan-Mak
+          Examples!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         </a>
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
