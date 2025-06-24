@@ -10,7 +10,7 @@ declare global {
     }
 }
 
-export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-QCELM17N8J'
+export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-6BBKK546MP'
 
 // Initialize GA4 - now just checks if it's available
 export const initGA = (): Promise<void> => {
