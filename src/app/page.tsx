@@ -1,3 +1,5 @@
+'use client'
+
 import Image from "next/image";
 import { event } from './ga4/g4-tag'
 
